@@ -15,31 +15,72 @@ let tempWord = whatToGuess();
 
 // init function
 
+// function tryWord(attemptWord, secretWord) {
+//     let arrSecretWord = secretWord.split('');
+//     let arrAttemptWord = attemptWord.split('');
+//     let result = {
+//         wellPlaced: [],
+//         missPlaced: [],
+//         notUseful: []
+//     };
+
+//     for (let i = 0; i < secretWord.length; i++) {
+//         if (arrAttemptWord[i] === arrSecretWord[i]) {
+//             tempWord[i] = ` ${arrAttemptWord[i]}`;
+//             result.wellPlaced.push(arrAttemptWord[i]);
+//             result.missPlaced.push("_");
+//             result.notUseful.push("_");
+//         }
+//     }
+//     for (let i = 0; i < secretWord.length; i++) {
+//         if (arrSecretWord.includes(arrAttemptWord[i]) && tempWord.includes(arrAttemptWord[i])) {
+//             result.wellPlaced[i] = "_";
+//             result.missPlaced[i] = arrAttemptWord[i];
+//             result.notUseful[i] = "_";
+//         }
+//         else {
+//             result.wellPlaced[i] = "_";
+//             result.missPlaced[i] = "_";
+//             result.notUseful[i] = arrAttemptWord[i];
+//         }
+//     }
+//     return result;
+// }
+
 function tryWord(attemptWord, secretWord) {
     let arrSecretWord = secretWord.split('');
     let arrAttemptWord = attemptWord.split('');
+    let tempSecret = [...arrSecretWord];
     let result = {
         wellPlaced: [],
         missPlaced: [],
         notUseful: []
     };
 
-    for (let i = 0; i < secretWord.length; i++) {
+    for (let i = 0; i < arrAttemptWord.length; i++) {
         if (arrAttemptWord[i] === arrSecretWord[i]) {
-            tempWord[i] = ` ${arrAttemptWord[i]}`;
-            result.wellPlaced.push(arrAttemptWord[i]);
-            result.missPlaced.push("_");
-            result.notUseful.push("_");
-        }
-        else if (arrSecretWord.includes(arrAttemptWord[i]) && tempWord.includes(arrAttemptWord[i])) {
-            result.wellPlaced.push("_");
-            result.missPlaced.push(arrAttemptWord[i]);
-            result.notUseful.push("_");
+            result.wellPlaced[i] = arrAttemptWord[i];
+            tempSecret[i] = null;
         }
         else {
-            result.wellPlaced.push("_");
-            result.missPlaced.push("_");
-            result.notUseful.push(arrAttemptWord[i]);
+            result.wellPlaced[i] = "_";
+        }
+    }
+    for (let i = 0; i < arrAttemptWord.length; i++) {
+        if (result.wellPlaced[i] !== "_") {
+            result.missPlaced[i] = "_";
+            result.notUseful[i] = "_";
+            continue;
+        }
+        const index = tempSecret.indexOf(arrAttemptWord[i]);
+        if (index !== -1) {
+            result.missPlaced[i] = arrAttemptWord[i];
+            result.notUseful[i] = "_";
+            tempSecret[index] = null;
+        }
+        else {
+            result.missPlaced[i] = "_";
+            result.notUseful[i] = arrAttemptWord[i];
         }
     }
     return result;
@@ -55,6 +96,12 @@ function guess() {
     }
     else {
         let result = tryWord(attemptWord, secretWord);
+
+        for (let i = 0; i < secretWord.length; i++) {
+            if (result.wellPlaced[i] !== "_") {
+                tempWord[i] = ` ${result.wellPlaced[i]}`;
+            }
+        }
 
         wordAttempt.value = '';
         restToGuess.innerText = `Mot à trouver: ${tempWord}`;
